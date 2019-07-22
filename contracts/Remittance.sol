@@ -37,6 +37,8 @@ contract Remittance is Pausable {
 
     // Before claiming the funds, the exchange shop submits a signature made of pass1, pass2 and the claiming address
     // This will prevent an attacker from listening the network to submit a faster "releaseFunds" and steal the funds
+    // once the releaseFunds method is called by the legit user, the attacker could take the passwords and launch his own
+    // addAddress+releaseFunds, but since those are 2 methods to execute the chances are slimmer.
 
     function addAddress(bytes32 signature) public whenNotPaused {
         authAddresses[signature] = msg.sender;
