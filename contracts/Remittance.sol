@@ -30,11 +30,6 @@ contract Remittance is Pausable {
         emit LogFundsAdded(msg.sender, msg.value, passHash);
     }
 
-    function testHash (bytes32 input1, bytes32 input2) public whenNotPaused {
-        bytes32 passHash = hash2psswds(input1,input2);
-        emit LogHash(passHash);
-    }
-
     function hash2psswds(bytes32 input1, bytes32 input2) private view returns (bytes32 passHash){
         passHash = keccak256(abi.encodePacked(input1,input2));
     }

@@ -10,13 +10,11 @@ contract('Remittance', (accounts) => {
   const accountTwo = accounts[1];
   const accountThree = accounts[2];
 
-  // If the pass strings are only made up of numbers, the tests will not be valid. I think it is related to the fact that
-  // toHex function treats strings made of numbers as a number, but I do not know how to force to treat it as UTF8 encoding
   const pass1raw = "123456b";
   const pass2raw = "456789a";
   const pass1 = web3.utils.sha3(pass1raw);
   const pass2 = web3.utils.sha3(pass2raw);
-  const pass2no0x = pass2.slice(2);
+  const pass2no0x = pass2.slice(2); // this was a tricky one
   console.log(pass1);
   console.log(pass2);
   const passHash = web3.utils.soliditySha3(pass1+pass2no0x);
@@ -25,7 +23,7 @@ contract('Remittance', (accounts) => {
   const pass4raw = "369852";
   const pass3 = web3.utils.sha3(pass3raw);
   const pass4 = web3.utils.sha3(pass4raw);
-  
+
   const accountZero = "0x0000000000000000000000000000000000000000";
   const amountBN = new BN('1000000000000',10);
   //console.log("Amount is: "+amountBN);
