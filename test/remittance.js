@@ -12,19 +12,20 @@ contract('Remittance', (accounts) => {
 
   // If the pass strings are only made up of numbers, the tests will not be valid. I think it is related to the fact that
   // toHex function treats strings made of numbers as a number, but I do not know how to force to treat it as UTF8 encoding
-  const pass1 = "123456b";
-  const pass2 = "456789a";
-  const pass1Hex = web3.utils.toHex(pass1);
-  const pass2Hex = web3.utils.toHex(pass2);
-  const passHex = web3.utils.toHex(pass1+pass2);
-  console.log(pass1Hex);
-  console.log(pass2Hex);
-  console.log(passHex);
-
-  const passHash = web3.utils.soliditySha3(passHex);
+  const pass1raw = "123456b";
+  const pass2raw = "456789a";
+  const pass1 = web3.utils.sha3(pass1raw);
+  const pass2 = web3.utils.sha3(pass2raw);
+  const pass2no0x = pass2.slice(2);
+  console.log(pass1);
+  console.log(pass2);
+  const passHash = web3.utils.soliditySha3(pass1+pass2no0x);
   console.log("HashedHash: ", passHash);
-  const pass3 = "147852";
-  const pass4 = "369852";
+  const pass3raw = "147852";
+  const pass4raw = "369852";
+  const pass3 = web3.utils.sha3(pass3raw);
+  const pass4 = web3.utils.sha3(pass4raw);
+  
   const accountZero = "0x0000000000000000000000000000000000000000";
   const amountBN = new BN('1000000000000',10);
   //console.log("Amount is: "+amountBN);
