@@ -19,20 +19,28 @@ contract Remittance is Pausable {
         uint value
     );
 
+    event LogPassHash (
+        bytes32 indexed passHash
+    );
+
     // passhash is the hash of pass1, pass2, and exchangeAddress
     // exchangeAddress is the address of the exchange who will request the withdrawal
     function addFunds(bytes32 passHash) payable public whenNotPaused {
         require(msg.value>0, "Amount stored cannot be zero");
-        require(funds[passHash]!=0, "Passwords already in use");
+        require(funds[passHash]==0, "Passwords already in use");
         funds[passHash] = msg.value;
         emit LogFundsAdded(msg.sender, msg.value, passHash);
     }
 
     function releaseFunds(bytes32 pass1, bytes32 pass2) public whenNotPaused {
-        bytes32 passHash = keccak256(abi.encodePacked(pass1,pass2,msg.sender));
+        bytes32 addHash = keccak256(abi.encodePacked(msg.sender));
+        bytes32 passHash = keccak256(abi.encodePacked(addHash,pass1,pass2));
+        uint amount = funds[passHash];
         require(amount > 0, "No funds available");
         funds[passHash] = 0;
         emit LogFundsReleased(msg.sender, amount);
+        emit LogPassHash(addHash);
+        emit LogPassHash(passHash);
         msg.sender.transfer(amount);
     }
 }

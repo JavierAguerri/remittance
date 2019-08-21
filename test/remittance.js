@@ -10,14 +10,19 @@ contract('Remittance', (accounts) => {
   const accountTwo = accounts[1];
   const accountThree = accounts[2];
 
+  const accountOneno0x = accountOne.slice(2);
+  const senderHash = web3.utils.soliditySha3(accountOneno0x);
+
   const pass1raw = "123456b";
   const pass2raw = "456789a";
   const pass1 = web3.utils.sha3(pass1raw);
+  const pass1no0x = pass1.slice(2); 
   const pass2 = web3.utils.sha3(pass2raw);
   const pass2no0x = pass2.slice(2); // this was a tricky one
-  console.log(pass1);
-  console.log(pass2);
-  const passHash = web3.utils.soliditySha3(pass1+pass2no0x);
+  //console.log(pass1);
+  //console.log(pass2);
+  const passHash = web3.utils.soliditySha3(senderHash+pass1no0x+pass2no0x);
+  console.log("AddHash: ", senderHash);
   console.log("HashedHash: ", passHash);
   const pass3raw = "147852";
   const pass4raw = "369852";
@@ -35,24 +40,24 @@ contract('Remittance', (accounts) => {
   it('should fail when releasing funds with the wrong passwords', async () => {
     await remittanceInstance.addFunds(passHash, {from: accountOne, value: amountBN});
     console.log("test 1: ",passHash);
-    await remittanceInstance.testHash(pass1, pass2, {from: accountThree});
     await truffleAssert.fails(
       remittanceInstance.releaseFunds(pass3, pass4, {from: accountOne}),
       truffleAssert.ErrorType.REVERT
     );
   });
 
-  it('should work when releasing funds with the right passwords, using another account', async () => {
+  it('should fail when releasing funds with the right passwords, using another account', async () => {
     await remittanceInstance.addFunds(passHash, {from: accountOne, value: amountBN});
     console.log("test 2: ",passHash);
-    await remittanceInstance.testHash(pass1, pass2, {from: accountThree});
-    await remittanceInstance.releaseFunds(pass1, pass2, {from: accountThree});
+    await truffleAssert.fails(
+      remittanceInstance.releaseFunds(pass1, pass2, {from: accountThree}),
+      truffleAssert.ErrorType.REVERT
+    );
   });
 
   it('should work when releasing funds with the right passwords, using the same account', async () => {
     await remittanceInstance.addFunds(passHash, {from: accountOne, value: amountBN});
     console.log("test 3: ",passHash);
-    await remittanceInstance.testHash(pass1, pass2, {from: accountThree});
     await remittanceInstance.releaseFunds(pass1, pass2, {from: accountOne});
   });
 
