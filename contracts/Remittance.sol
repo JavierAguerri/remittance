@@ -16,11 +16,8 @@ contract Remittance is Pausable {
 
     event LogFundsReleased (
         address indexed sender,
+        bytes32 indexed passHash,
         uint value
-    );
-
-    event LogPassHash (
-        bytes32 indexed passHash
     );
 
     // passhash is the hash of pass1, pass2, and exchangeAddress
@@ -33,14 +30,11 @@ contract Remittance is Pausable {
     }
 
     function releaseFunds(bytes32 pass1, bytes32 pass2) public whenNotPaused {
-        bytes32 addHash = keccak256(abi.encodePacked(msg.sender));
-        bytes32 passHash = keccak256(abi.encodePacked(addHash,pass1,pass2));
+        bytes32 passHash = keccak256(abi.encodePacked(msg.sender, pass1, pass2));
         uint amount = funds[passHash];
         require(amount > 0, "No funds available");
         funds[passHash] = 0;
-        emit LogFundsReleased(msg.sender, amount);
-        emit LogPassHash(addHash);
-        emit LogPassHash(passHash);
+        emit LogFundsReleased(msg.sender, passHash, amount);
         msg.sender.transfer(amount);
     }
 }

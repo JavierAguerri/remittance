@@ -11,6 +11,9 @@ contract('Remittance', (accounts) => {
   const accountThree = accounts[2];
 
   const accountOneno0x = accountOne.slice(2);
+  const accountOneBytes = web3.utils.fromAscii(accountOne);
+  console.log("Account sender in bytes32: " + accountOneBytes);
+
   const senderHash = web3.utils.soliditySha3(accountOneno0x);
 
   const pass1raw = "123456b";
@@ -21,7 +24,8 @@ contract('Remittance', (accounts) => {
   const pass2no0x = pass2.slice(2); // this was a tricky one
   //console.log(pass1);
   //console.log(pass2);
-  const passHash = web3.utils.soliditySha3(senderHash+pass1no0x+pass2no0x);
+
+  const passHash = web3.utils.soliditySha3(accountOne+pass1no0x+pass2no0x);
   console.log("AddHash: ", senderHash);
   console.log("HashedHash: ", passHash);
   const pass3raw = "147852";
